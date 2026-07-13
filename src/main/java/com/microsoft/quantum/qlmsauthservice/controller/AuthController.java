@@ -17,26 +17,24 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Hardcoded users for now
-    // In production: use database!
     private Map<String, User> users = new HashMap<>() {{
         put("admin", User.builder()
                 .username("admin")
-                .password("AdminQlms@2024!")
+                .password("admin123")
                 .role("ADMIN")
                 .email("admin@microsoft.com")
                 .lab("Redmond")
                 .build());
         put("researcher", User.builder()
                 .username("researcher")
-                .password("ResearchQlms@2024!")
+                .password("research123")
                 .role("RESEARCHER")
                 .email("researcher@microsoft.com")
                 .lab("Sydney")
                 .build());
         put("labmanager", User.builder()
                 .username("labmanager")
-                .password("LabMgrQlms@2024!")
+                .password("manager123")
                 .role("LAB_MANAGER")
                 .email("labmanager@microsoft.com")
                 .lab("Redmond")
@@ -45,12 +43,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest request) {
+            @RequestBody Map<String, String> body) {
 
-        User user = users.get(request.getUsername());
+        String username = body.get("username");
+        String password = body.get("password");
+
+        User user = users.get(username);
 
         if (user == null ||
-                !user.getPassword().equals(request.getPassword())) {
+                !user.getPassword().equals(password)) {
             return ResponseEntity.status(401)
                     .body("Invalid username or password!");
         }
