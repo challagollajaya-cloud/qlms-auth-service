@@ -1,11 +1,10 @@
-﻿package com.microsoft.quantum.qlmsauthservice.controller;
+package com.microsoft.quantum.qlmsauthservice.controller;
 
-import com.microsoft.quantum.qlmsauthservice.model.LoginRequest;
-import com.microsoft.quantum.qlmsauthservice.model.User;
-import com.microsoft.quantum.qlmsauthservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.microsoft.quantum.qlmsauthservice.model.User;
+import com.microsoft.quantum.qlmsauthservice.security.JwtUtil;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,40 +43,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody Map<String, String> body) {
-
         String username = body.get("username");
         String password = body.get("password");
-
         User user = users.get(username);
-
         if (user == null ||
                 !user.getPassword().equals(password)) {
             return ResponseEntity.status(401)
                     .body("Invalid username or password!");
         }
-
         String token = jwtUtil.generateToken(
                 user.getUsername(), user.getRole());
-
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
         response.put("username", user.getUsername());
         response.put("role", user.getRole());
         response.put("email", user.getEmail());
         response.put("lab", user.getLab());
-
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/validate")
-    public ResponseEntity<?> validate(
-            @RequestHeader("Authorization") String authHeader) {
-        if (authHeader != null
-                && authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.ok("Token is valid!");
-        }
-        return ResponseEntity.status(401)
-                .body("Invalid token!");
     }
 
     @GetMapping("/users")
